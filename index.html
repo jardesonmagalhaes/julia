@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Carlinhos Barbearia | Agenda Profissional</title>
-    <link rel="icon" type="image/png" href="imagem.png">
+    <link rel="icon" type="image/png" href="imagem.jpg">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
     <style>
@@ -740,7 +740,7 @@
 </head>
 <body>
     <header onclick="location.reload()">
-        <img src="imagem.png" alt="Logo Magalhães Barbearia" crossorigin="anonymous">
+        <img src="imagem.jpg" alt="Logo Carlinhos Barbearia" crossorigin="anonymous">
         <h1>Carlinhos Barbearia</h1>
     </header>
 
@@ -1059,7 +1059,7 @@
             domtoimage.toPng(mainElement)
                 .then(function (dataUrl) {
                     const link = document.createElement('a');
-                    link.download = 'agenda-magalhaes-barbearia.png';
+                    link.download = 'agenda-carlinhos-barbearia.png';
                     link.href = dataUrl;
                     document.body.appendChild(link);
                     link.click();
