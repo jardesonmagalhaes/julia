@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agenda da Juju Nóbrega | Agenda Pessoal</title>
+    <link rel="icon" href="https://images.unsplash.com/photo-1503264116251-35a269479413?ixlib=rb-4.0.3&auto=format&fit=crop&w=80&q=60" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Oswald:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Paleta feminina, profissional e suave */
+            --primary-deep: #3b2f40; /* dark plum */
+            --primary-soft: #6f4a7b; /* muted violet */
+            --accent-rose: #f3a6c6; /* soft rose */
+            --accent-gold: #e6bf6a; /* subtle gold */
+            --bg-light: #fbf8fa; /* off-white with a hint of pink */
+            --card-bg: #ffffff;
+            --text-dark: #222024;
+            --muted: #9aa0a6;
+            --form-border: #e6dfe6;
+            --success: #28a745;
+            --error: #ef4444;
+            --info: #3b82f6;
+
+            --spacing-xs: 0.5rem;
+            --spacing-s: 1rem;
+            --spacing-m: 1.5rem;
+            --spacing-l: 2rem;
+
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 6px 18px rgba(61, 43, 70, 0.08);
+            --transition: all 0.22s ease;
+        }
+
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Montserrat',sans-serif;background:var(--bg-light);color:var(--text-dark);min-height:100vh;display:flex;flex-direction:column}
+
+        header{background:linear-gradient(90deg,var(--primary-deep),var(--primary-soft));color:white;padding:18px 24px;display:flex;align-items:center;gap:16px;border-bottom:4px solid var(--accent-rose);position:sticky;top:0;z-index:1000}
+        header img{width:64px;height:64px;border-radius:12px;object-fit:cover;border:3px solid rgba(255,255,255,0.14)}
+        header h1{font-family:'Oswald',sans-serif;font-size:1.8rem;letter-spacing:0.06em}
+        header p{font-size:0.9rem;opacity:0.9}
+
+        main{max-width:1100px;margin:24px auto;padding:0 18px;width:100%;display:flex;flex-direction:column;gap:20px}
+
+        form{background:var(--card-bg);padding:18px;border-radius:12px;box-shadow:var(--shadow-md);border:1px solid var(--form-border);max-width:720px;margin:0 auto}
+        form label{display:block;margin-bottom:8px;font-weight:600;color:var(--primary-deep)}
+        form input, form select, form textarea{width:100%;padding:10px 12px;margin-bottom:14px;border-radius:8px;border:1px solid var(--form-border);background:#fff}
+        form textarea{min-height:80px;resize:vertical}
+
+        .btn-primary,.btn-secondary{padding:10px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:700;transition:var(--transition)}
+        .btn-primary{background:var(--primary-deep);color:white}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+        .btn-secondary{background:var(--accent-rose);color:var(--primary-deep)}
+
+        .week-nav{display:flex;align-items:center;justify-content:center;gap:12px;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(111,74,123,0.06),transparent);box-shadow:var(--shadow-sm)}
+        .week-nav span{font-weight:700;color:var(--primary-deep)}
+
+        .dias-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+        .dia{background:var(--card-bg);padding:16px;border-radius:12px;box-shadow:var(--shadow-md);border:1px solid var(--form-border);display:flex;flex-direction:column;min-height:260px}
+        .dia h3{font-family:'Oswald',sans-serif;font-size:1.2rem;margin-bottom:10px;color:var(--primary-deep);border-bottom:2px solid var(--accent-rose);padding-bottom:8px}
+
+        .agendamento-list{flex-grow:1;overflow:auto;padding-right:6px}
+        .agendamento{background:linear-gradient(180deg,#fff, #fff);padding:10px;border-radius:10px;margin-bottom:10px;border-left:6px solid var(--primary-soft);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:6px}
+        .agendamento.completed{background:#f6fff6;border-left-color:#81c784;opacity:0.85}
+        .agendamento strong{color:var(--primary-deep)}
+        .agendamento-details{font-size:0.95rem;color:var(--text-dark);display:flex;align-items:center;gap:8px}
+        .completion-mark{color:var(--success);font-weight:700;display:none}
+        .agendamento.completed .completion-mark{display:inline}
+
+        .agendamento-buttons{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
+        .agendamento-buttons button{width:36px;height:36px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
+        .btn-edit{background:var(--primary-soft);color:white}
+        .btn-remove{background:#d9777a;color:white}
+        .btn-complete{background:var(--success);color:white}
+
+        .divisor-horario{border-top:2px dashed #e3dbe3;margin:16px 0;position:relative}
+        .divisor-horario::before{content:"ALMOÇO";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--card-bg);padding:0 10px;color:var(--primary-deep);font-weight:700}
+
+        .container-botoes{display:flex;justify-content:center;gap:12px;padding:16px}
+
+        .message-container{display:none;padding:12px;border-radius:8px;margin-bottom:12px;font-weight:600;text-align:center}
+        .message-container.success{display:block;background:#e6ffef;color:var(--success);border-left:6px solid var(--success)}
+        .message-container.error{display:block;background:#fff0f0;color:var(--error);border-left:6px solid var(--error)}
+        .message-container.info{display:block;background:#eef6ff;color:var(--info);border-left:6px solid var(--info)}
+
+        .no-appointments{text-align:center;color:var(--muted);font-style:italic;padding:12px}
+
+        @media(max-width:768px){header h1{font-size:1.2rem} .dia{min-height:200px}}
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://images.unsplash.com/photo-1503264116251-35a269479413?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=60" alt="Avatar Juju Nóbrega">
+        <div>
+            <h1>Agenda da Juju Nóbrega</h1>
+            <p>Agenda pessoal — organize seu dia, tarefas e compromissos</p>
+        </div>
+    </header>
+
+    <main>
+        <form id="form-agendamento">
+            <div class="message-container" id="message-container"></div>
+
+            <label for="data">Data:</label>
+            <input type="date" id="data" required />
+
+            <label for="horario">Horário:</label>
+            <input type="time" id="horario" required />
+
+            <label for="titulo">Título (curto):</label>
+            <input type="text" id="cliente" placeholder="Ex: Reunião com equipe" required />
+
+            <label for="descricao">Descrição (opcional):</label>
+            <textarea id="descricao" placeholder="Detalhes do que precisa ser feito..."></textarea>
+
+            <label for="categoria">Categoria:</label>
+            <select id="servico" required>
+                <option value="">Selecione uma categoria</option>
+                <option value="Trabalho">Trabalho</option>
+                <option value="Estudo">Estudo</option>
+                <option value="Saúde">Saúde / Exercício</option>
+                <option value="Pessoal">Pessoal</option>
+                <option value="Compras">Compras / Errands</option>
+                <option value="Reunião">Reunião</option>
+            </select>
+
+            <input type="hidden" id="index-edicao" value="">
+            <button type="submit" class="btn-primary">
+                <!-- Save icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                Salvar Compromisso
+            </button>
+        </form>
+
+        <div class="week-nav">
+            <button class="btn-secondary" onclick="mudarSemana(-1)">Anterior</button>
+            <span id="semana-atual"></span>
+            <button class="btn-secondary" onclick="mudarSemana(1)">Próxima</button>
+        </div>
+
+        <div class="dias-container" id="dias"></div>
+
+        <div class="container-botoes">
+            <button class="btn-primary" onclick="gerarImagem()">Exportar Agenda (PNG)</button>
+        </div>
+    </main>
+
+    <script>
+        let dataAtual = new Date();
+
+        function showMessage(message, type = 'info'){
+            const msg = document.getElementById('message-container');
+            msg.textContent = message;
+            msg.className = 'message-container ' + type;
+            setTimeout(()=>{ msg.className = 'message-container'; msg.style.display=''; }, 4500);
+        }
+
+        function getStartOfWeek(date){
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - (day === 0 ? 6 : day - 1);
+            return new Date(d.getFullYear(), d.getMonth(), diff);
+        }
+
+        function formatarDataCurta(date){
+            const day = String(date.getDate()).padStart(2,'0');
+            const month = String(date.getMonth()+1).padStart(2,'0');
+            return `${day}/${month}`;
+        }
+
+        function formatarDataCompleta(date){
+            const options = { weekday: 'long', day: '2-digit', month: '2-digit' };
+            const formatted = date.toLocaleDateString('pt-BR', options);
+            return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+        }
+
+        function capitalize(str){ return str ? str.charAt(0).toUpperCase() + str.slice(1) : str; }
+
+        function carregarAgendamentos(){
+            const diasContainer = document.getElementById('dias');
+            diasContainer.innerHTML = '';
+
+            const startOfWeek = getStartOfWeek(dataAtual);
+            const diasDaSemanaDisplay = [];
+
+            // Monday to Sunday (7 days) — daily agenda
+            for(let i=0;i<7;i++){
+                const currentDay = new Date(startOfWeek);
+                currentDay.setDate(startOfWeek.getDate()+i);
+                diasDaSemanaDisplay.push(currentDay);
+            }
+
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate()+6);
+            document.getElementById('semana-atual').textContent = `Semana de ${formatarDataCurta(startOfWeek)} a ${formatarDataCurta(endOfWeek)}`;
+
+            diasDaSemanaDisplay.forEach(date => {
+                const dataKey = date.toISOString().slice(0,10);
+                let agendamentos = JSON.parse(localStorage.getItem(dataKey)) || [];
+                agendamentos = agendamentos.map(item=>({ ...item, completed: item.hasOwnProperty('completed') ? item.completed : false }));
+                agendamentos.sort((a,b)=>a.horario.localeCompare(b.horario));
+                localStorage.setItem(dataKey, JSON.stringify(agendamentos));
+
+                const diaDiv = document.createElement('div');
+                diaDiv.className='dia';
+                diaDiv.innerHTML = `<h3>${formatarDataCompleta(date)}</h3>`;
+
+                const agendamentoListDiv = document.createElement('div');
+                agendamentoListDiv.className='agendamento-list';
+
+                let insertedLunch = false;
+
+                if(agendamentos.length===0){
+                    agendamentoListDiv.innerHTML += '<p class="no-appointments">Nenhum compromisso para este dia.</p>';
+                } else {
+                    agendamentos.forEach((item,index)=>{
+                        if(item.horario >= '12:00' && !insertedLunch){
+                            agendamentoListDiv.innerHTML += '<div class="divisor-horario"></div>';
+                            insertedLunch = true;
+                        }
+
+                        const agendamentoDiv = document.createElement('div');
+                        agendamentoDiv.className = `agendamento ${item.completed ? 'completed' : ''}`;
+                        agendamentoDiv.innerHTML = `
+                            <div class="agendamento-details">
+                                ${item.completed ? '<span class="completion-mark">✔</span>' : ''}
+                                <strong>${item.horario}</strong> - ${capitalize(item.cliente)} <span style="color:var(--muted);">(${item.servico})</span>
+                            </div>
+                            <div style="font-size:0.9rem;color:var(--muted);">${item.descricao ? item.descricao : ''}</div>
+                            <div class="agendamento-buttons">
+                                <button class="btn-edit" onclick="editarAgendamento('${dataKey}', ${index})" title="Editar">✎</button>
+                                <button class="btn-remove" onclick="removerAgendamento('${dataKey}', ${index})" title="Remover">🗑</button>
+                                <button class="btn-complete" onclick="toggleConcluido('${dataKey}', ${index})" title="Concluir">✔</button>
+                            </div>
+                        `;
+                        agendamentoListDiv.appendChild(agendamentoDiv);
+                    });
+                }
+
+                diaDiv.appendChild(agendamentoListDiv);
+                diasContainer.appendChild(diaDiv);
+            });
+        }
+
+        function salvarAgendamento(event){
+            event.preventDefault();
+            const dataInput = document.getElementById('data');
+            const horarioInput = document.getElementById('horario');
+            const clienteInput = document.getElementById('cliente');
+            const servicoInput = document.getElementById('servico');
+            const descricaoInput = document.getElementById('descricao');
+            const indexEdicaoInput = document.getElementById('index-edicao');
+
+            const data = dataInput.value;
+            const horario = horarioInput.value;
+            const cliente = clienteInput.value.trim();
+            const servico = servicoInput.value;
+            const descricao = descricaoInput.value.trim();
+            const indexEdicao = indexEdicaoInput.value;
+
+            if(!data || !horario || !cliente || !servico){ showMessage('Preencha data, horário, título e categoria.', 'error'); return; }
+
+            let agendamentosDoDia = JSON.parse(localStorage.getItem(data)) || [];
+
+            const isConflict = agendamentosDoDia.some((item, idx) => item.horario === horario && idx !== parseInt(indexEdicao));
+            if(isConflict){ showMessage('Já existe um compromisso neste horário. Escolha outro horário.', 'error'); return; }
+
+            const novoAgendamento = { data, horario, cliente, servico, descricao, completed: false };
+
+            if(indexEdicao !== ''){
+                agendamentosDoDia[parseInt(indexEdicao)] = novoAgendamento;
+                showMessage('Compromisso atualizado com sucesso!', 'success');
+            } else {
+                agendamentosDoDia.push(novoAgendamento);
+                showMessage('Compromisso salvo com sucesso!', 'success');
+            }
+
+            localStorage.setItem(data, JSON.stringify(agendamentosDoDia));
+
+            dataInput.value = '';
+            horarioInput.value = '';
+            clienteInput.value = '';
+            servicoInput.value = '';
+            descricaoInput.value = '';
+            indexEdicaoInput.value = '';
+
+            carregarAgendamentos();
+        }
+
+        function editarAgendamento(dataKey,index){
+            const agendamentosDoDia = JSON.parse(localStorage.getItem(dataKey)) || [];
+            const ag = agendamentosDoDia[index];
+            if(ag){
+                document.getElementById('data').value = ag.data;
+                document.getElementById('horario').value = ag.horario;
+                document.getElementById('cliente').value = ag.cliente;
+                document.getElementById('servico').value = ag.servico;
+                document.getElementById('descricao').value = ag.descricao || '';
+                document.getElementById('index-edicao').value = index;
+                showMessage('Edite os campos e clique em "Salvar Compromisso" para atualizar.', 'info');
+            }
+        }
+
+        function removerAgendamento(dataKey,index){
+            if(confirm('Deseja remover este compromisso?')){
+                let agendamentosDoDia = JSON.parse(localStorage.getItem(dataKey)) || [];
+                agendamentosDoDia.splice(index,1);
+                localStorage.setItem(dataKey, JSON.stringify(agendamentosDoDia));
+                showMessage('Compromisso removido.', 'success');
+                carregarAgendamentos();
+            }
+        }
+
+        function toggleConcluido(dataKey,index){
+            let agendamentosDoDia = JSON.parse(localStorage.getItem(dataKey)) || [];
+            if(agendamentosDoDia[index]){
+                agendamentosDoDia[index].completed = !agendamentosDoDia[index].completed;
+                localStorage.setItem(dataKey, JSON.stringify(agendamentosDoDia));
+                showMessage(`Compromisso ${agendamentosDoDia[index].completed ? 'marcado como concluído' : 'marcado como pendente'}.`, 'success');
+                carregarAgendamentos();
+            }
+        }
+
+        function mudarSemana(offset){
+            const currentDay = dataAtual.getDay();
+            const daysToMonday = currentDay === 0 ? 6 : currentDay - 1;
+            const currentMonday = new Date(dataAtual);
+            currentMonday.setDate(dataAtual.getDate() - daysToMonday);
+            currentMonday.setDate(currentMonday.getDate() + (offset*7));
+            dataAtual = currentMonday;
+            carregarAgendamentos();
+        }
+
+        function gerarImagem(){
+            const mainElement = document.querySelector('main');
+            const header = document.querySelector('header');
+            const form = document.getElementById('form-agendamento');
+            const nav = document.querySelector('.week-nav');
+            const buttonsContainer = document.querySelector('.container-botoes');
+            const messageContainer = document.getElementById('message-container');
+
+            header.style.display='none'; form.style.display='none'; nav.style.display='none'; buttonsContainer.style.display='none'; messageContainer.style.display='none';
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            window.scrollTo(0,0);
+
+            domtoimage.toPng(mainElement)
+                .then(function(dataUrl){
+                    const link = document.createElement('a');
+                    link.download = 'agenda-juju-nobrega.png';
+                    link.href = dataUrl;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    showMessage('Agenda exportada como PNG!', 'success');
+                })
+                .catch(function(err){ console.error(err); showMessage('Erro ao exportar imagem.', 'error'); })
+                .finally(()=>{ header.style.display=''; form.style.display=''; nav.style.display=''; buttonsContainer.style.display=''; messageContainer.style.display=''; window.scrollTo(0, scrollTop); });
+        }
+
+        document.getElementById('form-agendamento').addEventListener('submit', salvarAgendamento);
+        document.addEventListener('DOMContentLoaded', ()=>{ carregarAgendamentos(); });
+    </script>
+</body>
+</html>
